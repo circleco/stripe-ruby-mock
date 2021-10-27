@@ -1159,6 +1159,7 @@ module StripeMock
           statement_descriptor: nil,
           trial_period_days: nil
         },
+        price: 'PER_USER_PRICE1',
         quantity: 2
       }.merge(params)
     end

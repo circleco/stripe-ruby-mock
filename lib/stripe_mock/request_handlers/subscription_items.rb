@@ -20,16 +20,18 @@ module StripeMock
         params[:id] ||= new_id('si')
 
         require_param(:subscription) unless params[:subscription]
-        require_param(:plan) unless params[:plan]
+        require_param(:price) unless params[:price]
 
-        subscriptions_items[params[:id]] = Data.mock_subscription_item(params.merge(plan: plans[params[:plan]]))
+        subscriptions_items[params[:id]] = Data.mock_subscription_item(
+          params.merge(price: prices[params[:price]])
+        )
       end
 
       def update_subscription_item(route, method_url, params, headers)
         route =~ method_url
 
         subscription_item = assert_existence :subscription_item, $1, subscriptions_items[$1]
-        subscription_item.merge!(params.merge(plan: plans[params[:plan]]))
+        subscription_item.merge!(params.merge(price: prices[params[:price]]))
       end
     end
   end
