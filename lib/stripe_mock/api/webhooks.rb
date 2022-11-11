@@ -38,6 +38,7 @@ module StripeMock
     def self.event_list
       @__list = [
         'account.updated',
+        'account.deleted',
         'account.application.deauthorized',
         'account.external_account.created',
         'account.external_account.updated',
