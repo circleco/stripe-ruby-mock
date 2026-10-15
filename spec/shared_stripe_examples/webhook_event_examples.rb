@@ -2,6 +2,18 @@ require 'spec_helper'
 
 shared_examples 'Webhook Events API' do
 
+  it "parses webhook fixtures with the supported modern or legacy JSON API" do
+    json_parser = defined?(MultiJSON) ? MultiJSON : MultiJson
+    parser_method = [:parse, :load, :decode].find { |method| json_parser.respond_to?(method) }
+    expect(json_parser).to receive(parser_method).and_call_original
+    expect(json_parser).not_to receive(:load) if parser_method == :parse
+
+    payload = StripeMock.mock_webhook_payload('customer.created', email: 'customer@example.com')
+
+    expect(payload[:type]).to eq('customer.created')
+    expect(payload[:data][:object][:email]).to eq('customer@example.com')
+  end
+
   it "matches the list of webhooks with the folder of fixtures" do
     events = StripeMock::Webhooks.event_list.to_set
     file_names = Dir['./lib/stripe_mock/webhook_fixtures/*'].map {|f| File.basename(f, '.json')}.to_set
