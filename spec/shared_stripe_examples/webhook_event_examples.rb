@@ -2,8 +2,11 @@ require 'spec_helper'
 
 shared_examples 'Webhook Events API' do
 
-  it "parses webhook fixtures without the deprecated MultiJson.load API" do
-    expect(MultiJson).not_to receive(:load)
+  it "parses webhook fixtures with the supported modern or legacy JSON API" do
+    json_parser = defined?(MultiJSON) ? MultiJSON : MultiJson
+    parser_method = [:parse, :load, :decode].find { |method| json_parser.respond_to?(method) }
+    expect(json_parser).to receive(parser_method).and_call_original
+    expect(json_parser).not_to receive(:load) if parser_method == :parse
 
     payload = StripeMock.mock_webhook_payload('customer.created', email: 'customer@example.com')
 
